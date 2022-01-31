@@ -1,33 +1,31 @@
+/* Add a todo/ */
 
-            /* Add a todo/ */
+// creating a empty array
+let demoarray = [];
 
-            // creating a empty array
-            let demoarray = [];
+// function for rendering the todo items
+function renderTodo(todo) {
+  localStorage.setItem("demoarray", JSON.stringify(demoarray));
 
-            // function for rendering the todo items
-            function renderTodo(todo) {
+  // select unorder list using class
+  const list = document.querySelector(".todo-list");
+  const item = document.querySelector(`[data-key='${todo.id}']`);
 
-                localStorage.setItem('demoarray', JSON.stringify(demoarray));
+  if (todo.deleted) {
+    item.remove();
+    return;
+  }
 
-                // select unorder list using class
-                const list = document.querySelector(".todo-list");
-                const item = document.querySelector(`[data-key='${todo.id}']`);
-
-                if (todo.deleted) {
-                    item.remove();
-                    return
-                }
-
-                // check if checked is true add done class effect otherwise as it is
-                const isChecked = todo.checked ? "done" : "";
-                // create a new list 
-                const newlist = document.createElement("li");
-                // set attribute to new list
-                newlist.setAttribute("class", `todo-item ${isChecked}`);
-                newlist.setAttribute("data-key", todo.id);
-                newlist.innerHTML = `
-<input id="${todo.id}" type="checkbox"/>
-<label for "${todo.id}" class="tick js-tick"></label>
+  // check if checked is true add done class effect otherwise as it is
+  const isChecked = todo.checked ? "done" : "";
+  // create a new list
+  const newlist = document.createElement("li");
+  // set attribute to new list
+  newlist.setAttribute("class", `todo-item ${isChecked}`);
+  newlist.setAttribute("data-key", todo.id);
+  newlist.innerHTML = `
+<input id="${todo.id}"  type="checkbox"/>
+<label for "${todo.id}"  class="tick js-tick"></label>
 <span>${todo.x}</span>
 <button class="delete-todo js-delete-todo">
     <button class="delete-todo js-delete-todo">
@@ -37,123 +35,142 @@
     </button>
 `;
 
-                if (item) {
-                    list.replaceChild(newlist, item);
-                } else {
-                    list.append(newlist);
-                }
+  if (item) {
+    list.replaceChild(newlist, item);
+  } else {
+    list.append(newlist);
+  }
 
-                /* // disabled this after fixing a selection bug
+  /* // disabled this after fixing a selection bug
                 list.append(newlist); */
-            }
+}
 
-            // function for adding a todo
-            function myFunction(x) {
+// function for adding a todo
+function myFunction(x) {
+  // creating a object
+  const todoobject = {
+    x,
+    checked: false,
+    id: Date.now(),
+  };
 
-                // creating a object 
-                const todoobject = {
-                    x,
-                    checked: false,
-                    id: Date.now(),
-                };
+  // push new todo into a demoarray object
+  demoarray.push(todoobject);
 
-                // push new todo into a demoarray object
-                demoarray.push(todoobject);
+  renderTodo(todoobject);
+  console.log(demoarray);
 
-                renderTodo(todoobject);
-                console.log(demoarray);
-
-                /* disabled this because updated it show in list  */
-                /* // print demoarray in console
+  /* disabled this because updated it show in list  */
+  /* // print demoarray in console
                 console.log(demoarray); */
-            }
+}
 
-            function toggleDone(b) {
-                const index = demoarray.findIndex(myitem => myitem.id === Number(b));
-                demoarray[index].checked = !demoarray[index].checked;
-                renderTodo(demoarray[index]);
-            }
+function toggleDone(b) {
+  const index = demoarray.findIndex((myitem) => myitem.id === Number(b));
+  demoarray[index].checked = !demoarray[index].checked;
+  renderTodo(demoarray[index]);
+}
 
+function deleteTodo(c) {
+  const index = demoarray.findIndex((myitem) => myitem.id === Number(c));
+  const emptytodo = {
+    deleted: true,
+    ...demoarray[index],
+  };
+  demoarray = demoarray.filter((myitem) => myitem.id !== Number(c));
+  renderTodo(emptytodo);
+}
 
-            function deleteTodo(c) {
-                const index = demoarray.findIndex(myitem => myitem.id === Number(c));
-                const emptytodo = {
-                    deleted: true,
-                    ...demoarray[index]
-                };
-                demoarray = demoarray.filter(myitem => myitem.id !== Number(c));
-                renderTodo(emptytodo);
-            }
+// select form
+const form = document.querySelector(".formselect");
 
+// add a event listner submit on form
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
 
+  // select input
+  const input = document.querySelector(".inputselect");
 
-            // select form
-            const form = document.querySelector(".formselect");
+  // remove whitespace of input vlaue using trim method
+  const text = input.value.trim();
 
-            // add a event listner submit on form
-            form.addEventListener('submit', event => {
-                event.preventDefault();
+  // statement condition for printing a input value
+  if (text !== "") {
+    // call a function for adding a new todo value
+    myFunction(text);
+    // after submit input value will be become blank ""
+    input.value = "";
+  }
+});
 
-                // select input 
-                const input = document.querySelector(".inputselect");
+// select entire list
+const list = document.querySelector(".js-todo-list");
+list.addEventListener("click", (event) => {
+  if (event.target.classList.contains("js-tick")) {
+    const itemKey = event.target.parentElement.dataset.key;
+    toggleDone(itemKey);
+  }
 
-                // remove whitespace of input vlaue using trim method
-                const text = input.value.trim();
+  if (event.target.classList.contains("js-delete-todo")) {
+    const itemKey = event.target.parentElement.dataset.key;
+    deleteTodo(itemKey);
+  }
+});
 
-                // statement condition for printing a input value
-                if (text !== "") {
-                    // call a function for adding a new todo value
-                    myFunction(text);
-                    // after submit input value will be become blank ""
-                    input.value = '';
-                }
-            });
+document.addEventListener("DOMContentLoaded", () => {
+  const ref = localStorage.getItem("demoarray");
+  if (ref) {
+    demoarray = JSON.parse(ref);
+    demoarray.forEach((t) => {
+      renderTodo(t);
+    });
+  }
+});
 
-            // select entire list
-            const list = document.querySelector('.js-todo-list');
-            list.addEventListener('click', event => {
-                if (event.target.classList.contains('js-tick')) {
-                    const itemKey = event.target.parentElement.dataset.key;
-                    toggleDone(itemKey);
-                }
+const toggleSwitch = document.querySelector(
+  '.theme-switch input[type="checkbox"]'
+);
+const currentTheme = localStorage.getItem("theme");
 
-                if (event.target.classList.contains('js-delete-todo')) {
-                    const itemKey = event.target.parentElement.dataset.key;
-                    deleteTodo(itemKey);
-                }
+if (currentTheme) {
+  document.documentElement.setAttribute("data-theme", currentTheme);
 
-            });
+  if (currentTheme === "dark") {
+    toggleSwitch.checked = true;
+  }
+}
 
-            document.addEventListener('DOMContentLoaded', () => {
-                const ref = localStorage.getItem('demoarray');
-                if (ref) {
-                    demoarray = JSON.parse(ref);
-                    demoarray.forEach(t => {
-                        renderTodo(t);
-                    });
-                }
-            });
+function switchTheme(e) {
+  if (e.target.checked) {
+    document.documentElement.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light");
+  }
+}
 
-            const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
-            const currentTheme = localStorage.getItem('theme');
+toggleSwitch.addEventListener("change", switchTheme, false);
 
-            if (currentTheme) {
-                document.documentElement.setAttribute('data-theme', currentTheme);
+document.addEventListener("contextmenu", (event) => event.preventDefault());
+document.onkeydown = function (e) {
+  // disable F12 key
+  if (e.keyCode == 123) {
+    return false;
+  }
 
-                if (currentTheme === 'dark') {
-                    toggleSwitch.checked = true;
-                }
-            }
+  // disable I key
+  if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+    return false;
+  }
 
-            function switchTheme(e) {
-                if (e.target.checked) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    localStorage.setItem('theme', 'dark');
-                }
-                else {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    localStorage.setItem('theme', 'light');
-                }
-            }
+  // disable J key
+  if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+    return false;
+  }
 
-            toggleSwitch.addEventListener('change', switchTheme, false);
+  // disable U key
+  if (e.ctrlKey && e.keyCode == 85) {
+    return false;
+  }
+};
