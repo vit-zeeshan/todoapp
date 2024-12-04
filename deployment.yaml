@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: web-app-container
-        image: zeeshanr/frontend-app:latest
+        image: zeeshanr/amazon:latest
         ports:
         - containerPort: 80
 

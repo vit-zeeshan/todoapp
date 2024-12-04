@@ -10,6 +10,9 @@ RUN rm -rf ./*
 # Copy your project files into the container
 COPY . .
 
+# Copy the custom Nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
 # Expose port 80
 EXPOSE 80
 
