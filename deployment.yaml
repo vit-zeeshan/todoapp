@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: web-app-container
-        image: zeeshanr/amazon:latest
+        image: zeeshanr/todoapp:latest
         ports:
         - containerPort: 80
 
